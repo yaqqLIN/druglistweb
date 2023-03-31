@@ -268,7 +268,7 @@ boxhead.id="boxhead";
 boxhead.textContent="是否下載資料檔?";
 let boxcontent=document.createElement("div");
 boxcontent.id="boxcontent";
-boxcontent.innerHTML="<center style='color:darkred;'>查詢藥品清單</center></br>開啟前需先下載資料檔(約 17 MB)";
+boxcontent.innerHTML="<center style='color:darkred;'>查詢藥品清單</center></br>開啟前須先下載資料檔  (約 17 MB)";
 let boxconfirm=document.createElement("div");
 boxconfirm.id="boxconfirm";
 boxconfirm.textContent="確定!";
@@ -332,9 +332,12 @@ let inputbuttons=function(btnarr,btnbox,completeCk){
     }
 }
 let intextvalue=function(){
-    let regin=/[\u4e00-\u9fa5a-zA-Z0-9_+-]+/
+let regin=/[-#$%&^*/"';\\]+/
     window.constdata.inputBoxvar.input1="";
     if(regin.test(this.value)){
+        this.parentNode.children[1].textContent="輸入錯誤";
+        this.parentNode.parentNode.children[5].classList.add("submitban");
+    }else{
         this.parentNode.children[1].textContent="ok";
         if(window.constdata.inputBoxvar.input2[0]){
             this.parentNode.parentNode.children[5].classList.remove("submitban");
@@ -342,9 +345,6 @@ let intextvalue=function(){
             this.parentNode.parentNode.children[5].classList.add("submitban");
         }
         window.constdata.inputBoxvar.input1=this.value;
-    }else{
-        this.parentNode.children[1].textContent="輸入錯誤";
-        this.parentNode.parentNode.children[5].classList.add("submitban");
     }
 }
 //searchbox
