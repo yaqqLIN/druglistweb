@@ -268,7 +268,7 @@ boxhead.id="boxhead";
 boxhead.textContent="是否下載資料檔?";
 let boxcontent=document.createElement("div");
 boxcontent.id="boxcontent";
-boxcontent.innerHTML="<center style='color:darkred;'>查詢藥品清單</center></br>下載資料檔?  (約 17 MB)";
+boxcontent.innerHTML="<center style='color:darkred;'>查詢藥品清單</center></br>開啟前需先下載資料檔(約 17 MB)";
 let boxconfirm=document.createElement("div");
 boxconfirm.id="boxconfirm";
 boxconfirm.textContent="確定!";
