@@ -194,7 +194,7 @@ document.querySelector("body").appendChild(btnblockall).appendChild(btnblock);
 let btnfold=document.createElement("botton");//
 btnfold.id="btnfold"
 btnfold.className="btn2";
-btnfold.textContent="展開";
+btnfold.textContent="收合";
 let openbtnblock=function(){
     if(btnblock.style.transform=="scale(0)"){
         btnblock.style.transform="scale(1)";
@@ -455,14 +455,12 @@ function reposition(){
         postblock.style.fontSize="14px";
         postblock.style.width="85%"
         btnblockall.appendChild(btnfold);
-        btnblock.style.transform="scale(0)"
         btnblockall.style.width="80%"
 
     }else{
         showtitle=[2,3,5];
         postblock.style.fontSize="16px";
         postblock.style.width="70%"
-        btnblock.style.transform="scale(1)"
         btnblockall.style.width="25%"
         if(document.querySelector("#btnfold")){
             btnblockall.removeChild(btnfold);
