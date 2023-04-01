@@ -315,10 +315,19 @@ let inputbox=function(boxname,title,content){
 }
 let inputbuttons=function(btnarr,btnbox,completeCk){
     let chooseop=function(){
-        window.constdata.inputBoxvar.input2.push(this.value)
-        this.classList.add("btnarrselected")
-        if(completeCk.value){
-           this.parentNode.parentNode.children[5].classList.remove("submitban")
+        let inputBoxvar=window.constdata.inputBoxvar
+        if(this.classList.contains("btnarrselected")){
+            this.classList.remove("btnarrselected");
+            let selectedindex=inputBoxvar.input2.indexOf(this.value)
+            if(selectedindex!=-1){
+                inputBoxvar.input2.splice(selectedindex,1)
+            }
+        }else{
+            inputBoxvar.input2.push(this.value)
+            this.classList.add("btnarrselected")
+            if(completeCk.value){
+            this.parentNode.parentNode.children[5].classList.remove("submitban")
+            }
         }
     }
     for(i=0;i<btnarr.length;i++){
