@@ -171,10 +171,6 @@ table{
     margin-bottom: 2px;
     cursor: pointer;
 }
-.optionv:hover{
-    background-color:rgb(134, 55, 62) ;
-    color: white;
-}
 .boxcontentselected{
     pointer-events: none;
     opacity: 0.5;
@@ -225,6 +221,10 @@ table{
     }
     .optionv{
         font-size: 20px;
+    }
+    .optionv:hover{
+        background-color:brown ;
+        color: white;
     }
     .boxcontent{
         height:20%;
