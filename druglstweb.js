@@ -127,6 +127,7 @@ function searchdata(){
     if(searchIndex.length>0){
         btnblock.appendChild(btnsearchmore);
     };
+    window.drugdata.shown=0;
     showpage(0,showtitle);
     this.parentNode ?this.parentNode.style.transform="translate(120%,-70%) scale(0)":"";
 }
@@ -468,5 +469,4 @@ function reposition(){
     }
     showpage(0,showtitle)
     return  showtitle
-    
 }
