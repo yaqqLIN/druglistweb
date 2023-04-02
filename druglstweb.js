@@ -482,7 +482,6 @@ async function downloadpicdatas(downloadindex,element){
     let inputsetsrc=window.constdata.inputBoxvar.input2;
     //檔案名稱filenamelist
     let filenamedata=window.drugdata.content["head"+String(filename)]
-    console.log(filenamedata)
     let filenamelist=downloadindex.map(index=>filenamedata[parseInt(index)].replace(/\"/g,'').replace(/\”/g,'').replace(/\“/g,'').replace(/\//g,''))
     let fileli=downloadindex.map(index=>window.drugdata.content.head0[parseInt(index)])
     if(window.drugdata.picsetdata[inputsetsrc]!=true){
