@@ -1,9 +1,17 @@
+const druglstwebbody="body"
 const drugsrc="https://yaqqlin.github.io/druglistweb/data.json";
 const instrsetsrc="https://yaqqlin.github.io/druglistweb/picdata1.json";
 const appearset="https://yaqqlin.github.io/druglistweb/appeardata1.json"
 const picsetsrc=[instrsetsrc,instrsetsrc,appearset];
 const ditems=['許可證字號','中文品名','英文品名','適應症','劑型','主成分略述','申請商名稱','製造商名稱','用法用量']
 const Ddata={};
+let updatehtmltext="<div class='updatehtmltext'>使用說明：點選右上角重新查詢>>輸入關鍵字>>輸入在哪些條目裡搜尋關鍵字>>送出>>表格中會呈現搜尋結果</div>"
+updatehtmltext+="<div class='updatehtmltext'>呈現結果後:</div>"
+updatehtmltext+="<div class='updatehtmltext'>1.點選<span style='color:red'>重新查尋</span>查新的資料</div>"
+updatehtmltext+="<div class='updatehtmltext'>2.點選<span style='color:red'>繼續查詢</span>由呈現的資料中繼續查詢</div>"
+updatehtmltext+="<div class='updatehtmltext'>3.點選<span style='color:red'>下載清單</span>由呈現的資料存為csv檔(可由excel或記事本開啟)</div>"
+updatehtmltext+="<div class='updatehtmltext'>4.點選<span style='color:red'>下載圖檔</span>所有呈現的資料將轉為超連結，點選連結即可下載圖檔(仿單、外盒、外觀)</div>"
+updatehtmltext+="<div class='updatehtmltext'>5.點選索引值旁邊的+號加入<span style='color:red'>存檔清單</span>，可由下方存檔清單執行各項操作</div>"
 window.constdata={};
 function render(elementtag,classnam,elementid,Content,parentid){
     let elementold = document.querySelector("#"+elementid);
@@ -31,21 +39,25 @@ async function excute(){
     box.style.display="none";
     let table1=document.createElement("table");
     table1.id="table1";
-    document.querySelector("body").appendChild(table1);
+    document.querySelector(druglstwebbody).appendChild(table1);
     Ddata.data=await getdata(drugsrc);
     window.drugdata=Object.assign({},Ddata.data)
     let drugdata=window.drugdata;
     drugdata.downloadfhead=[];
-    drugdata.searchdata=drugdata.content;
+    drugdata.searchdata=Object.assign({},Ddata.data.content)
+    window.drugdata.searchdata.index=[]
+    window.drugdata.searchdata.index=[...Array(drugdata.content.head0.length).keys()]
     drugdata.picsetdata=[]
     drugdata.shown=0;
     drugdata.showdata=[];
+    drugdata.savedindex=[]
     btnblock.appendChild(btnsearch);
     btnbottom.appendChild(btnprevious);
     btnbottom.appendChild(btnnext);
+    btnbottom.appendChild(savedbtn);
     showtitle=reposition()
     window.addEventListener("resize",reposition)
-    showpage(0,showtitle);
+    //showpage(0,showtitle);
     return Ddata
 };
 function showpage(pageshownum,showtitle){
@@ -81,7 +93,11 @@ function showpage(pageshownum,showtitle){
         if(content["head0"][i+num]){
             drugdata.showdata=[]
             drugdata.showdata[i]=render("tr","contenttr","row"+String(i+1),"","table1");
-            drugdata.showdata[i]["index"+String(i)]=render("td","headtd","row"+String(i+1)+"index",i+1+num,"row"+String(i+1))
+            drugdata.showdata[i]["index"+String(i)]=render("td","headtd","row"+String(i+1)+"index",i+1+num,"row"+String(i+1));
+            drugdata.showdata[i].ckeckindex=render("button","ckeckindex","row"+String(i+1)+"ckeckindex","","row"+String(i+1)+"index");
+            drugdata.showdata[i].ckeckindex.textContent="+"
+            drugdata.showdata[i].ckeckindex.value=drugdata.searchdata.index[num+i];
+            drugdata.showdata[i].ckeckindex.addEventListener("click",saveindex)
             for(j of showtitle){
                 drugdata.showdata[i]["head"+String(j)]=render("td","contenttd","row"+String(i+1)+"head"+String(j),content["head"+j][i+num],"row"+String(i+1));
             }
@@ -94,6 +110,13 @@ function nextpage(){
 function previouspage(){
     showpage(-10,showtitle)
 }
+function saveindex(){
+    licontent.push(render("li","savedli","savedli"+String(window.drugdata.savedindex.length+1),window.drugdata.content.head2[this.value],"savedlst"));
+    window.drugdata.savedindex.push(this.value)
+    if(savedbox.contentbot.style.display=="none"){
+        savedbox.contentbot.style.display="block";
+    }
+}
 const customFilter = (arr, keyword) => {
     let result = [];
     arr.forEach((element, index) => {
@@ -105,12 +128,12 @@ const customFilter = (arr, keyword) => {
     return result;
 }
 function searchdata(){
-    let drugdata=window.drugdata;
+    let searchdata=window.drugdata.searchdata;
     let keyword=window.constdata.inputBoxvar.input1.toUpperCase();
     let searchhead=window.constdata.inputBoxvar.input2;
     searchIndex=[];
     for(i of searchhead){
-        let searchList =customFilter(drugdata.searchdata["head"+String(i)],keyword)
+        let searchList =customFilter(searchdata["head"+String(i)],keyword)
         if (searchList.length > 0) {
             searchIndex.push(...searchList);
             searchIndex = [...new Set(searchIndex)].sort((a, b) => a - b);
@@ -120,7 +143,7 @@ function searchdata(){
         };
         
     };
-    drugdata.searchdata.index=searchIndex;
+    searchdata.index=searchIndex.map(index=>searchdata.index[index]);
     for(i=0;i<ditems.length;i++){
         drugdata.searchdata["head"+String(i)]=searchIndex.map(index=>drugdata.searchdata["head"+String(i)][index]);
     }
@@ -133,37 +156,46 @@ function searchdata(){
 }
 function newdata(){
     window.drugdata.searchdata=Object.assign({},Ddata.data.content);
+    window.drugdata.searchdata.index=[]
+    window.drugdata.searchdata.index=[...Array(drugdata.content.head0.length).keys()]
     searchdata();
     btnblock.appendChild(btndownload);
     btnblock.appendChild(btnDpic);
     this.parentNode.style.transform="translate(120%,-70%) scale(0)";
 }
-function textTOcsv(){
-    let drugdata=window.drugdata;
-    let headindex=window.constdata.inputBoxvar.input2;
-    let items=window.drugdata.item;
-    drugdata.textout="";
-    text="";
-    for(i=0;i<headindex.length;i++){
-        text+=items[headindex[i]]+",";
-    };
-    drugdata.textout+="index"+","+text.slice(0,-1)+"\n";
-    for(i=0;i<drugdata.searchdata.index.length;i++){
-        text=""
-        for(item=0;item<headindex.length;item++){
-            text+=drugdata.searchdata["head"+headindex[item]][i]+",";
+function downloadcsv(dlindexs){
+    if(window.constdata.inputBoxvar.input1 && window.constdata.inputBoxvar.input2.length>0){
+        let drugdata=window.drugdata;
+        let headindex=window.constdata.inputBoxvar.input2;
+        let items=window.drugdata.item;
+        let text="";
+        let dlindex;
+        drugdata.textout="";
+        for(i=0;i<headindex.length;i++){
+            text+=items[headindex[i]]+",";
         };
-        drugdata.textout+=String(i+1)+","+text.slice(0,-1)+"\n";
+        drugdata.textout+="index"+","+text.slice(0,-1)+"\n";
+        for(i=0;i<dlindexs.length;i++){
+            text=""
+            dlindex=parseInt(dlindexs[i]);
+            for(item=0;item<headindex.length;item++){
+                text+=drugdata.content["head"+headindex[item]][dlindex]+",";
+            };
+            drugdata.textout+=String(i+1)+","+text.slice(0,-1)+"\n";
+        }
     }
-}
-function downloadText(){
-    if(window.constdata.inputBoxvar.input1 && window.constdata.inputBoxvar.input2.length>0)
-    textTOcsv();
     let filename=window.constdata.inputBoxvar.input1+".csv"
     let link = window.document.createElement("a");
     link.setAttribute("href", "data:text/csv;charset=utf-8,%EF%BB%BF" + encodeURI(window.drugdata.textout));
     link.setAttribute("download", filename);
     link.click();
+    
+}
+function downloadText(){
+    /*if(window.constdata.inputBoxvar.input1 && window.constdata.inputBoxvar.input2.length>0)
+    textTOcsv();
+    */
+    downloadcsv(window.drugdata.searchdata.index)
 }
 window.constdata.inputBoxvar={};
 window.constdata.inputBoxvar.input1=[];
@@ -171,7 +203,7 @@ window.constdata.inputBoxvar.input2=[];
 let postblock=document.createElement("div");
 postblock.id="postblock";
 postblock.style="white-space: pre;"
-document.querySelector("body").appendChild(postblock);
+document.querySelector(druglstwebbody).appendChild(postblock);
 //btnblock>top
 let openbox=function(element){
     window.constdata.inputBoxvar.input1=[];
@@ -191,7 +223,7 @@ let btnblockall=document.createElement("div");
 btnblockall.id="btnblockall";
 let btnblock=document.createElement("div");
 btnblock.id="btnblock";
-document.querySelector("body").appendChild(btnblockall).appendChild(btnblock);
+document.querySelector(druglstwebbody).appendChild(btnblockall).appendChild(btnblock);
 let btnfold=document.createElement("botton");//
 btnfold.id="btnfold"
 btnfold.className="btn2";
@@ -231,6 +263,7 @@ btndownload.textContent="下載清單";
 let openDbox=function(){
     openbox(downloadbox.box)
     downloadfname.value="";
+    downloadbox.submit.addEventListener("click",downloadText);
 };
 btndownload.addEventListener("click",openDbox);
 let btnDpic=document.createElement("botton");
@@ -239,6 +272,7 @@ btnDpic.textContent="下載圖檔";
 let openDPbox=function(){
     window.drugdata.inputBoxvar={};
     openbox(downloadPicbox.box);
+    downloadPicbox.submit.addEventListener("click",downloadpicdata);
 }
 btnDpic.addEventListener("click",openDPbox);
 let piclinkbtn=document.createElement("botton");
@@ -248,10 +282,21 @@ let openPLbox=function(){
     openbox(hlinkbox.box);
 }
 piclinkbtn.addEventListener("click",openPLbox);
+let savedbtn=document.createElement("botton");
+savedbtn.className="btn1";
+savedbtn.textContent="存檔清單";
+let opensalbox=function(){
+    if(savedbox.classList.contains("savedboxselected")){
+        savedbox.classList.remove("savedboxselected")
+    }else{
+        savedbox.classList.add("savedboxselected")
+    }
+}
+savedbtn.addEventListener("click",opensalbox);
 //btnbottom
 let btnbottom=document.createElement("div");
 btnbottom.id="btnbottom";
-document.querySelector("body").appendChild(btnbottom);
+document.querySelector(druglstwebbody).appendChild(btnbottom);
 let btnnext=document.createElement("botton");
 btnnext.className="btn1";
 btnnext.textContent="下一頁";
@@ -269,7 +314,8 @@ boxhead.id="boxhead";
 boxhead.textContent="是否下載資料檔?";
 let boxcontent=document.createElement("div");
 boxcontent.id="boxcontent";
-boxcontent.innerHTML="<center style='color:darkred;'>查詢藥品清單</center></br>開啟前須先下載資料檔  (約 17 MB)";
+boxcontent.innerHTML="<center style='color:darkred;'>查詢藥品清單</center></br>開啟前須先下載資料檔  (約 17 MB)</br>";
+boxcontent.innerHTML+=updatehtmltext
 let boxconfirm=document.createElement("div");
 boxconfirm.id="boxconfirm";
 boxconfirm.textContent="確定!";
@@ -279,7 +325,7 @@ boxclose.id="boxclose";
 boxclose.textContent="關閉"
 let closeall=function(){window.close()}
 boxclose.addEventListener("click",closeall)
-document.querySelector("body").appendChild(box)
+document.querySelector(druglstwebbody).appendChild(box)
 .appendChild(boxhead)
 box.appendChild(boxcontent)
 box.appendChild(boxconfirm)
@@ -291,6 +337,7 @@ let closebox=function(){
 let inputbox=function(boxname,title,content){
     this.box=document.createElement("div");
     this.box.id=boxname;
+    this.box.className="inputbox"
     this.boxhead=document.createElement("div");
     this.boxhead.className="inputboxhead";
     this.boxhead.textContent=title
@@ -298,7 +345,7 @@ let inputbox=function(boxname,title,content){
     this.boxclose.className="inputboxclose";
     this.boxclose.textContent="X";
     this.boxclose.addEventListener("click",closebox);
-    document.querySelector("body").appendChild(this.box).appendChild(this.boxhead).appendChild(this.boxclose);
+    document.querySelector(druglstwebbody).appendChild(this.box).appendChild(this.boxhead).appendChild(this.boxclose);
     for(i=0;i<content.length;i++){
         this["content"+String(i)+"ti"]=document.createElement("div");
         this["content"+String(i)+"ti"].className="boxcontenti";
@@ -342,7 +389,7 @@ let inputbuttons=function(btnarr,btnbox,completeCk){
     }
 }
 let intextvalue=function(){
-let regin=/[-#$%&^*/"';\\]+/
+let regin=/[-!@#$&*"';/\}\)\>\<\(\{\|\\]+/
     window.constdata.inputBoxvar.input1="";
     if(regin.test(this.value)){
         this.parentNode.children[1].textContent="輸入錯誤";
@@ -372,7 +419,6 @@ searchbox.content0.appendChild(checkSinput);
 searchbox.options=new inputbuttons(ditems,searchbox.content1,boxkeyword);
 //downloadbox
 let downloadbox=new inputbox("downloadbox","下載",["輸入檔名","清單顯示項目"])
-downloadbox.submit.addEventListener("click",downloadText);
 let downloadfname=document.createElement("input");
 downloadfname.type="text";
 downloadfname.className="boxinput";
@@ -427,17 +473,18 @@ let inputset=function(){
     }
 }
 setbtn.map(element=>element.addEventListener("click",inputset));
-downloadPicbox.submit.addEventListener("click",downloadpicdata);
 
 let hlinkbox=new inputbox("hlinkbox","連結網址",["連結"]);
 hlinkbox.submit.style="display:none";
 hlinkbox.content0.style="display:block;height:60%;overflow:auto";
-async function downloadpicdata(){
+async function downloadpicdatas(downloadindex,element){
     let filename=window.constdata.inputBoxvar.input1;
     let inputsetsrc=window.constdata.inputBoxvar.input2;
     //檔案名稱filenamelist
-    let filenamelist=window.drugdata.searchdata["head"+String(filename)].map(n=>n.replace(/\"/g,'').replace(/\”/g,'').replace(/\“/g,'').replace(/\//g,''))
-    let fileli=window.drugdata.searchdata.head0;
+    let filenamedata=window.drugdata.content["head"+String(filename)]
+    console.log(filenamedata)
+    let filenamelist=downloadindex.map(index=>filenamedata[parseInt(index)].replace(/\"/g,'').replace(/\”/g,'').replace(/\“/g,'').replace(/\//g,''))
+    let fileli=downloadindex.map(index=>window.drugdata.content.head0[parseInt(index)])
     if(window.drugdata.picsetdata[inputsetsrc]!=true){
         window.drugdata.picsetdata[inputsetsrc]=await getdata(picsetsrc[inputsetsrc]);
     }
@@ -455,9 +502,12 @@ async function downloadpicdata(){
         link.innerHTML=filenamelist[i];
         hlinkbox.content0.appendChild(link);
     }
-    this.parentNode.style.transform="translate(120%,-70%) scale(0)";
+    element.parentNode.style.transform="translate(120%,-70%) scale(0)";
     btnblock.appendChild(piclinkbtn);
     hlinkbox.box.style.transform="translate(0,0) scale(1)";
+}
+function downloadpicdata(){
+    downloadpicdatas(window.drugdata.searchdata.index,this)
 }
 function reposition(){
     if(innerWidth<1200){
@@ -479,3 +529,74 @@ function reposition(){
     showpage(0,showtitle)
     return  showtitle
 }
+//savedlstbox>>bottom
+let savedbox=document.createElement("div");
+savedbox.className="savedbox";
+savedbox.boxhead=document.createElement("div");
+savedbox.boxhead.className="inputboxhead";
+savedbox.boxhead.textContent="已儲存的藥品"
+savedbox.boxclose=document.createElement("button");
+savedbox.boxclose.className="inputboxclose";
+savedbox.boxclose.textContent="X";
+let licontent=[];
+let closesavedbox=function(){
+    this.parentNode.parentNode.classList.remove("savedboxselected");
+}
+savedbox.boxclose.addEventListener("click",closesavedbox);
+savedbox.content=document.createElement("div");
+savedbox.content.id="savedboxcontent";
+savedbox.savedlst=document.createElement("ol");
+savedbox.savedlst.id="savedlst";
+savedbox.contentbot=document.createElement("div");
+savedbox.contentbot.id="savedboxbot";
+savedbox.contentbot.style.display="none";
+savedbox.btnsavelst=document.createElement("botton");
+savedbox.btnsavelst.textContent="下載清單";
+savedbox.btnsavelst.className="btn1";
+let downloadsaved=function(){
+    downloadcsv(window.drugdata.savedindex);
+}
+let openSLDbox=function(){
+    openbox(downloadbox.box);
+    downloadfname.value="";
+    downloadbox.submit.addEventListener("click",downloadsaved);
+};
+savedbox.btnsavelst.addEventListener("click",openSLDbox)
+savedbox.btnsavepiclst=document.createElement("botton");
+savedbox.btnsavepiclst.textContent="下載圖檔";
+savedbox.btnsavepiclst.className="btn1";
+let savepiclst=function(){
+    downloadpicdatas(window.drugdata.savedindex,this)
+}
+let opensavedDPbox=function(){
+    window.drugdata.inputBoxvar={};
+    openbox(downloadPicbox.box);
+    downloadPicbox.submit.addEventListener("click",savepiclst);
+}
+savedbox.btnsavepiclst.addEventListener("click",opensavedDPbox)
+savedbox.clearrepeated=document.createElement("botton");
+savedbox.clearrepeated.textContent="刪除重複";
+savedbox.clearrepeated.className="btn1";
+let clearrepeat=function(){
+    window.drugdata.savedindex = [...new Set(window.drugdata.savedindex)]
+    let childrens=[...savedbox.savedlst.children]
+    childrens.map(a=>savedbox.savedlst.removeChild(a));
+    window.drugdata.savedindex.map(a=>render("li","savedli","savedli"+String(savedbox.savedlst.children.length),window.drugdata.content.head2[parseInt(a)],"savedlst"));
+}
+savedbox.clearrepeated.addEventListener("click",clearrepeat);
+savedbox.clearall=document.createElement("botton");
+savedbox.clearall.textContent="刪除全部";
+savedbox.clearall.className="btn1";
+let clearAll=function(){
+    window.drugdata.savedindex = []
+    let childrens=[...savedbox.savedlst.children]
+    childrens.map(a=>savedbox.savedlst.removeChild(a));
+    savedbox.contentbot.style.display="none";
+}
+savedbox.clearall.addEventListener("click",clearAll);
+document.querySelector(druglstwebbody).appendChild(savedbox).appendChild(savedbox.boxhead).appendChild(savedbox.boxclose);
+savedbox.appendChild(savedbox.content).appendChild(savedbox.savedlst);
+savedbox.appendChild(savedbox.contentbot).appendChild(savedbox.btnsavelst);
+savedbox.contentbot.appendChild(savedbox.btnsavepiclst);
+savedbox.contentbot.appendChild(savedbox.clearrepeated);
+savedbox.contentbot.appendChild(savedbox.clearall);
