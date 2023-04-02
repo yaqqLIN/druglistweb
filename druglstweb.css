@@ -219,7 +219,7 @@ table{
 @media(min-width:1200px) and (min-height:500px) {
     #searchbox,#downloadbox,#downloadPicbox,#hlinkbox{
         width:40%;height:60%;
-        left: 35%;top:20%;
+        left: 26%;top:20%;
     }
     #boxhead{
         font-size: xx-large;
