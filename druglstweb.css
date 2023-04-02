@@ -17,10 +17,6 @@ body{
     color:rgb(0, 49, 0);
     font-weight: bold;
 }
-#boxcontent{
-    margin-top: 15%;
-    flex:0.7;
-}
 #boxconfirm{
     background-color: rgb(255, 171, 171);
     width: 25%;height: 10%;
@@ -29,7 +25,7 @@ body{
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    position: fixed;bottom: 20%;left: 20%;
+    position: fixed;/*bottom: 10%;*/left: 20%;
 }
 #boxconfirm:hover{
     background-color: rgb(243, 96, 96);
@@ -42,7 +38,7 @@ body{
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    position: fixed;bottom: 20%;right: 20%;
+    position: fixed;/*bottom: 10%;*/right: 20%;
 }
 #boxclose:hover{
     background-color: rgb(243, 96, 96);
@@ -78,9 +74,9 @@ body{
     height: 100px;
     position: fixed;top: 1%;right: 1%;
 }
-#btnfold{
+/*#btnfold{
     justify-self: left;
-}
+}*/
 #btnblock{
     display: flex;
     width: 100%;
@@ -119,7 +115,7 @@ table{
     bottom: 0;left: 1%;
     background-color: rgba(250, 232, 208,0.5);
 }
-#searchbox,#downloadbox,#downloadPicbox,#hlinkbox{
+/*#searchbox,#downloadbox,#downloadPicbox,#hlinkbox,*/.inputbox{
     background-color: rgb(255, 189, 193);
     position: fixed;
     border:5px grey ridge;
@@ -199,9 +195,30 @@ table{
     flex-wrap: wrap;
     gap:10px;
 }
+.savedbox{
+    position: fixed;bottom:50px;
+    width:95%;height:80%;
+    background-color: rgb(187, 255, 232);
+    z-index: 50;
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition:transform 0.5s;
+}
+.savedboxselected{
+    transform: scaleY(1);
+}
+#savedboxcontent{
+    overflow: auto;height: 75%;
+    background-color: rgb(156, 253, 221);
+}
+#savedboxbot{
+    position: fixed;bottom: 0;
+    height: 50px;width: 100%;
+    background-color: rgb(176, 223, 207);
+}
 @media(min-width:1200px) and (min-height:500px) {
     #searchbox,#downloadbox,#downloadPicbox,#hlinkbox{
-        width:30%;height:60%;
+        width:40%;height:60%;
         left: 35%;top:20%;
     }
     #boxhead{
@@ -237,6 +254,16 @@ table{
         height: 7%;
         font-size: 24px;
     }
+    .updatehtmltext{
+        font-size: 16px;
+    }
+    #boxcontent{
+        margin-top: 10%;
+        flex:0.7;
+    }
+    #boxconfirm,#boxclose{
+        bottom:20%;
+    }
 }
 @media(max-width:1199px) and (min-height:500px){
     #searchbox,#downloadbox,#downloadPicbox,#hlinkbox{
@@ -265,12 +292,22 @@ table{
         height:27%;
     }
     .inputsubmit{
-        bottom: 5%;
+        bottom: 4%;
         font-size: 20px;
     }
     .boxcontenti{
         height: 10%;
         font-size: 20px;
+    }
+    .updatehtmltext{
+        font-size: 14px;
+    }
+    #boxcontent{
+        margin-top: 0;
+        flex:0.7;
+    }
+    #boxconfirm,#boxclose{
+        bottom:10%;
     }
 }
 @media(max-height:499px){
@@ -306,5 +343,15 @@ table{
     .boxcontenti{
         height: 10%;
         font-size: 20px;
+    }
+    .updatehtmltext{
+        font-size: 12px;
+    }
+    #boxcontent{
+        margin-top: 0;
+        flex:0.7;
+    }
+    #boxconfirm,#boxclose{
+        bottom:10%;
     }
 }
