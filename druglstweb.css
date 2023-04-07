@@ -62,7 +62,7 @@ body{
     color: black;
     width: fit-content;
     padding: 7px;
-    margin-left: 20px;
+    /*margin-left: 20px;*/
 }
 .btn1:hover{
     background-color: rgb(107, 107, 226);
@@ -74,9 +74,6 @@ body{
     height: 100px;
     position: fixed;top: 1%;right: 1%;
 }
-/*#btnfold{
-    justify-self: left;
-}*/
 #btnblock{
     display: flex;
     width: 100%;
@@ -168,7 +165,7 @@ table{
     cursor: pointer;
 }
 .boxcontentselected{
-    pointer-events: none;
+    /*pointer-events: none;*/
     opacity: 0.5;
 }
 .btnarrselected{
@@ -216,10 +213,20 @@ table{
     height: 50px;width: 100%;
     background-color: rgb(176, 223, 207);
 }
+.savedli{
+    border-bottom:1px double grey;
+    font-size: 20px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    cursor: pointer;
+}
+.savedli:hover{
+    background-color: rgb(135, 218, 190);
+}
 @media(min-width:1200px) and (min-height:500px) {
     #searchbox,#downloadbox,#downloadPicbox,#hlinkbox{
         width:40%;height:60%;
-        left: 26%;top:20%;
+        left: 35%;top:20%;
     }
     #boxhead{
         font-size: xx-large;
@@ -263,6 +270,9 @@ table{
     }
     #boxconfirm,#boxclose{
         bottom:20%;
+    }
+    .btn1{
+        margin-left: 20px;
     }
 }
 @media(max-width:1199px) and (min-height:500px){
@@ -309,6 +319,9 @@ table{
     #boxconfirm,#boxclose{
         bottom:10%;
     }
+    .btn1{
+        margin-left: 5px;
+    }
 }
 @media(max-height:499px){
     #searchbox,#downloadbox,#downloadPicbox,#hlinkbox{
@@ -353,5 +366,8 @@ table{
     }
     #boxconfirm,#boxclose{
         bottom:10%;
+    }
+    .btn1{
+        margin-left: 20px;
     }
 }
