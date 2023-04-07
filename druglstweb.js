@@ -11,7 +11,7 @@ updatehtmltext+="<div class='updatehtmltext'>1.點選<span style='color:red'>重
 updatehtmltext+="<div class='updatehtmltext'>2.點選<span style='color:red'>繼續查詢</span>由呈現的資料中繼續查詢</div>"
 updatehtmltext+="<div class='updatehtmltext'>3.點選<span style='color:red'>下載清單</span>由呈現的資料存為csv檔(可由excel或記事本開啟)</div>"
 updatehtmltext+="<div class='updatehtmltext'>4.點選<span style='color:red'>下載圖檔</span>所有呈現的資料將轉為超連結，點選連結即可下載圖檔(仿單、外盒、外觀)</div>"
-updatehtmltext+="<div class='updatehtmltext'>5.點選索引值旁邊的+號加入<span style='color:red'>存檔清單</span>，可由下方存檔清單執行各項操作</div>"
+updatehtmltext+="<div class='updatehtmltext'>5.點選索引值旁邊的+號加入<span style='color:red'>存檔清單</span>，可由下方存檔清單執行各項操作，<span style='text-decoration:underline'>4/8更新:點選已存檔的藥品可查看詳細資訊</span></div>"
 window.constdata={};
 function render(elementtag,classnam,elementid,Content,parentid){
     let elementold = document.querySelector("#"+elementid);
@@ -61,6 +61,7 @@ async function excute(){
     return Ddata
 };
 function showpage(pageshownum,showtitle){
+    btnblock.style.transform="scale(1)";
     let drugdata=window.drugdata;
     drugdata.shown+=pageshownum;
     let num=drugdata.shown;
@@ -94,8 +95,7 @@ function showpage(pageshownum,showtitle){
             drugdata.showdata=[]
             drugdata.showdata[i]=render("tr","contenttr","row"+String(i+1),"","table1");
             drugdata.showdata[i]["index"+String(i)]=render("td","headtd","row"+String(i+1)+"index",i+1+num,"row"+String(i+1));
-            drugdata.showdata[i].ckeckindex=render("button","ckeckindex","row"+String(i+1)+"ckeckindex","","row"+String(i+1)+"index");
-            drugdata.showdata[i].ckeckindex.textContent="+"
+            drugdata.showdata[i].ckeckindex=render("button","ckeckindex","row"+String(i+1)+"ckeckindex","+","row"+String(i+1)+"index");
             drugdata.showdata[i].ckeckindex.value=drugdata.searchdata.index[num+i];
             drugdata.showdata[i].ckeckindex.addEventListener("click",saveindex)
             for(j of showtitle){
@@ -110,9 +110,23 @@ function nextpage(){
 function previouspage(){
     showpage(-10,showtitle)
 }
+function showLitable(){
+    /*let liinfoop=document.querySelector(".liinfoop");
+    console.log(liinfoop)*/
+    if(this.children[0]){
+        this.removeChild(this.children[0]);
+    }else{
+        render("ul","liinfoop","ol"+String(this.valueol),"",this.id);
+        [...Array(9).keys()].map(i=>render("li","liinfo","ol"+String(this.valueol)+String(i),ditems[i]+" : "+window.drugdata.content["head"+String(i)][this.valuein],"ol"+String(this.valueol)))
+    }
+}
 function saveindex(){
-    licontent.push(render("li","savedli","savedli"+String(window.drugdata.savedindex.length+1),window.drugdata.content.head2[this.value],"savedlst"));
-    window.drugdata.savedindex.push(this.value)
+    let element=render("li","savedli","savedli"+String(window.drugdata.savedindex.length+1),window.drugdata.content.head2[this.value],"savedlst")
+    licontent.push(element);
+    element.valuein=this.value;
+    element.valueol=window.drugdata.savedindex.length+1
+    element.addEventListener("click",showLitable)
+    window.drugdata.savedindex.push(this.value);
     if(savedbox.contentbot.style.display=="none"){
         savedbox.contentbot.style.display="block";
     }
@@ -445,6 +459,9 @@ Pnamebtns.forEach((element,index)=>{element.value=index});
 let inputPname=function(){
     this.parentNode.classList.add("boxcontentselected");
     this.classList.add("btnarrselected");
+    if(window.constdata.inputBoxvar.input1.length>0){
+        this.parentNode.children[window.constdata.inputBoxvar.input1].classList.remove("btnarrselected")
+    }
     window.constdata.inputBoxvar.input1=this.value;
     if(window.constdata.inputBoxvar.input2.length>0){
         this.parentNode.parentNode.children[5].classList.remove("submitban");
@@ -467,6 +484,10 @@ setbtn.map(element=>downloadPicbox.content1.appendChild(element))
 let inputset=function(){
     this.parentNode.classList.add("boxcontentselected");
     this.classList.add("btnarrselected");
+    if(window.constdata.inputBoxvar.input2.length>0){
+        this.parentNode.children[window.constdata.inputBoxvar.input2].classList.remove("btnarrselected")
+        console.log(this.parentNode.children[window.constdata.inputBoxvar.input2])
+    }
     window.constdata.inputBoxvar.input2=this.value;
     if(window.constdata.inputBoxvar.input1.length>0){
         this.parentNode.parentNode.children[5].classList.remove("submitban");
@@ -580,7 +601,12 @@ let clearrepeat=function(){
     window.drugdata.savedindex = [...new Set(window.drugdata.savedindex)]
     let childrens=[...savedbox.savedlst.children]
     childrens.map(a=>savedbox.savedlst.removeChild(a));
-    window.drugdata.savedindex.map(a=>render("li","savedli","savedli"+String(savedbox.savedlst.children.length),window.drugdata.content.head2[parseInt(a)],"savedlst"));
+    for(index of window.drugdata.savedindex){
+        let element=render("li","savedli","savedli"+String(savedbox.savedlst.children.length),window.drugdata.content.head2[parseInt(index)],"savedlst")
+        element.valuein=index;
+        element.valueol=element.parentNode.children.length
+        element.addEventListener("click",showLitable)
+    }
 }
 savedbox.clearrepeated.addEventListener("click",clearrepeat);
 savedbox.clearall=document.createElement("botton");
