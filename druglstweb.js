@@ -94,15 +94,30 @@ function showpage(pageshownum,showtitle){
         if(content["head0"][i+num]){
             drugdata.showdata=[]
             drugdata.showdata[i]=render("tr","contenttr","row"+String(i+1),"","table1");
-            drugdata.showdata[i]["index"+String(i)]=render("td","headtd","row"+String(i+1)+"index",i+1+num,"row"+String(i+1));
-            drugdata.showdata[i].ckeckindex=render("button","ckeckindex","row"+String(i+1)+"ckeckindex","+","row"+String(i+1)+"index");
+            drugdata.showdata[i]["index"+String(i)]=render("td","indextd","row"+String(i+1)+"index",i+1+num,"row"+String(i+1));
+            drugdata.showdata[i].ckeckindex=render("button","ckeckindex","row"+String(i+1)+"ckeckindex","","row"+String(i+1)+"index");
             drugdata.showdata[i].ckeckindex.value=drugdata.searchdata.index[num+i];
-            drugdata.showdata[i].ckeckindex.addEventListener("click",saveindex)
+            drugdata.showdata[i].ckeckindex.addEventListener("click",saveindex);
+            drugdata.showdata[i].ckeckindex.addEventListener("mouseenter",showItemdetail);
+            drugdata.showdata[i].ckeckindex.addEventListener("mouseleave",closeItemdetail);
+            drugdata.showdata[i].ckeckindex.img=render("img","","row"+String(i+1)+"ckeckindeximg","","row"+String(i+1)+"ckeckindex");
+            drugdata.showdata[i].ckeckindex.img.src="./button.png";
             for(j of showtitle){
                 drugdata.showdata[i]["head"+String(j)]=render("td","contenttd","row"+String(i+1)+"head"+String(j),content["head"+j][i+num],"row"+String(i+1));
             }
         }
     }
+}
+function showItemdetail(e){
+    itemdetailbox.style.display="block";
+    itemdetailbox.style.top=e.clientY+"px";
+    for(i=0;i<9;i++){
+        itemdetailbox.textContent+=ditems[i]+" : "+window.drugdata.content["head"+String(i)][this.value]+"。";
+    }
+}
+function closeItemdetail(){
+    itemdetailbox.textContent=""
+    itemdetailbox.style.display="none";
 }
 function nextpage(){
     showpage(10,showtitle)
@@ -111,8 +126,6 @@ function previouspage(){
     showpage(-10,showtitle)
 }
 function showLitable(){
-    /*let liinfoop=document.querySelector(".liinfoop");
-    console.log(liinfoop)*/
     if(this.children[0]){
         this.removeChild(this.children[0]);
     }else{
@@ -485,8 +498,7 @@ let inputset=function(){
     this.parentNode.classList.add("boxcontentselected");
     this.classList.add("btnarrselected");
     if(window.constdata.inputBoxvar.input2.length>0){
-        this.parentNode.children[window.constdata.inputBoxvar.input2].classList.remove("btnarrselected")
-        console.log(this.parentNode.children[window.constdata.inputBoxvar.input2])
+        this.parentNode.children[window.constdata.inputBoxvar.input2].classList.remove("btnarrselected");
     }
     window.constdata.inputBoxvar.input2=this.value;
     if(window.constdata.inputBoxvar.input1.length>0){
@@ -625,3 +637,7 @@ savedbox.appendChild(savedbox.contentbot).appendChild(savedbox.btnsavelst);
 savedbox.contentbot.appendChild(savedbox.btnsavepiclst);
 savedbox.contentbot.appendChild(savedbox.clearrepeated);
 savedbox.contentbot.appendChild(savedbox.clearall);
+
+let itemdetailbox=document.createElement("div");
+itemdetailbox.id="itemdetailbox";
+document.querySelector(druglstwebbody).appendChild(itemdetailbox);
