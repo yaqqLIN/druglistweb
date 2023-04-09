@@ -243,7 +243,7 @@ table{
     display: none;
     background-color: antiquewhite;
     border: 2px darkgrey solid;
-    position:fixed;left: 60px;
+    position:fixed;left: 60px;right:5%;
     z-index: 200;
 }
 @media(min-width:1200px) and (min-height:500px) {
