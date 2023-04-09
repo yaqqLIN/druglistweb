@@ -223,10 +223,33 @@ table{
 .savedli:hover{
     background-color: rgb(135, 218, 190);
 }
+.ckeckindex{
+    width:22px;height: 22px;padding: 0;
+    border-radius: 1px;border:1px darkred ;
+    background-color: rgba(255, 225, 186, 0.856);
+    cursor: pointer;
+}
+.ckeckindex:hover{
+    background-color: rgba(247, 211, 165, 0.747);
+}
+.ckeckindex>img{
+    width:18px;height: 18px;
+}
+.indextd{
+    width: 50px;
+    border-bottom:3px solid;
+}
+#itemdetailbox{
+    display: none;
+    background-color: antiquewhite;
+    border: 2px darkgrey solid;
+    position:fixed;left: 60px;
+    z-index: 200;
+}
 @media(min-width:1200px) and (min-height:500px) {
     #searchbox,#downloadbox,#downloadPicbox,#hlinkbox{
         width:40%;height:60%;
-        left: 35%;top:20%;
+        left: 26%;top:20%;
     }
     #boxhead{
         font-size: xx-large;
